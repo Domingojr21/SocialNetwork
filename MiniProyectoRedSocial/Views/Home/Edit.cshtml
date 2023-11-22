@@ -1,0 +1,33 @@
+﻿@using RedSocial.Core.Application.Dtos.Account;
+@using RedSocial.Core.Application.ViewModels.Publications
+@using RedSocial.Core.Application.ViewModels.Users
+@using RedSocial.Core.Application.Helpers;
+@using Microsoft.AspNetCore.Http
+@model SavePublicationsViewModel
+@inject IHttpContextAccessor httpContextAccessor
+@{
+    var User = httpContextAccessor.HttpContext.Session.Get<AuthenticationResponse>("user");  
+}
+
+<div class="row mb-3 col-6 offset-3 text-dark bg-light">
+
+    <form method="post" asp-controller="Home" asp-action="EditPost" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label class="form-label">Escriba algo para publicar</label>
+            <input asp-for="Content" type="text" class="form-control mb-3" />
+            <span class="text-danger" asp-validation-for="Content"> </span>
+
+            <label asp-for="File" class="form-label">Suba una imagen: </label>
+            <input asp-for="File" class="form-control" />
+            <span asp-validation-for="File" class="text-danger"></span>
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="UserId" value=@User.Id/>
+        </div>
+
+        <button type="submit" class="btn btn-outline-dark text-black fw-bold mb-3">Crear Post</button>
+
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-dark text-black fw-bold mb-3">Volver</a>
+    </form>
+</div>

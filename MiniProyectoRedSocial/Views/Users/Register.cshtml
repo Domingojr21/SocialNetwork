@@ -1,0 +1,89 @@
+﻿@model RedSocial.Core.Application.ViewModels.Users.SaveUsersViewModel
+
+<div class="row mb-3">
+    <h2 class="text-center text-light"> REGISTRO </h2>
+</div>
+
+<div class="row bg-dark">
+    <div class="col-6 offset-3">
+        <div class="card">
+            <div class="card-header bg-dark text-light">
+                <h4> Creando un Usuario </h4>
+            </div>
+            <div class="card-body">
+                @if (Model.HasError)
+                {
+                    <div class="alert bg-danger alert-dismissible fade show" role="alert">
+                        <p>@Model.Error</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                <form method="POST" asp-controller="Users" asp-action="Register" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input asp-for="FirstName" type="text" class="form-control mb-3" />
+                        <span class="text-danger" asp-validation-for="FirstName"> </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Apellido</label>
+                        <input asp-for="LastName" type="text" class="form-control mb-3" />
+                        <span class="text-danger" asp-validation-for="LastName"> </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Correo</label>
+                        <input asp-for="Email" type="text" class="form-control mb-3" />
+                        <span class="text-danger" asp-validation-for="Email"> </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Telefono</label>
+                        <input asp-for="PhoneNumber" type="text" class="form-control mb-3" />
+                        <span class="text-danger" asp-validation-for="PhoneNumber"> </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de Usuario</label>
+                        <input asp-for="Username" type="text" class="form-control mb-3" />
+                        <span class="text-danger" asp-validation-for="Username"> </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contraseña</label>
+                        <input asp-for="Password" type="password" class="form-control mb-3" />
+                        <span class="text-danger" asp-validation-for="Password"> </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirmar Contraseña</label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control mb-3" />
+                        <span class="text-danger" asp-validation-for="ConfirmPassword"> </span>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label asp-for="File" class="form-label">Introduzca una Imagen: </label>                      
+                                           
+                            <input required asp-for="File" class="form-control" />
+                        
+                        <span asp-validation-for="File" class="text-danger"></span>
+
+                    </div>
+
+
+
+                    <button type="submit" class="btn btn-outline-dark text-black fw-bold mb-3">Agregar</button>
+
+                    <a class="btn btn-outline-dark text-black fw-bold  mb-3" asp-controller="Users" asp-action="Index">Volver</a>
+                </form>
+
+                
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

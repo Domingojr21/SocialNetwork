@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RedSocial.Core.Application\RedSocial.Core.Application.csproj" />
+    <ProjectReference Include="..\RedSocial.Core.Domain\RedSocial.Core.Domain.csproj" />
+    <ProjectReference Include="..\RedSocial.Infrastructure.Identity\RedSocial.Infrastructure.Identity.csproj" />
+    <ProjectReference Include="..\RedSocial.Infrastructure.Persistence\RedSocial.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\RedSocial.Infrastructure.Shared\RedSocial.Infrastructure.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Publications\" />
+    <Folder Include="wwwroot\Images\Desings\" />
+  </ItemGroup>
+
+</Project>

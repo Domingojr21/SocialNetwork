@@ -1,0 +1,267 @@
+﻿@using RedSocial.Core.Application.ViewModels.Comments
+@using RedSocial.Core.Application.ViewModels.Publications
+@using RedSocial.Core.Application.ViewModels.Users
+@model SavePublicationsViewModel
+@using Microsoft.AspNetCore.Http
+@using RedSocial.Core.Application.Dtos.Account
+@using RedSocial.Core.Application.Helpers;
+@using RedSocial.Core.Application.ViewModels.Users
+@inject IHttpContextAccessor httpContextAccessor
+@{
+    var User = httpContextAccessor.HttpContext.Session.Get<AuthenticationResponse>("user");
+}
+<div class="container-fluid">
+
+    <div class="row mb-3 col-6 offset-3 text-dark bg-light">
+
+       <form method="post" asp-controller="Home" asp-action="Create" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label class="form-label">Escriba algo para publicar</label>
+                <span class="text-danger" asp-validation-for="Content"> </span>
+                <input asp-for="Content" type="text" class="form-control mb-3" />
+                         
+             
+                <label asp-for="File" class="form-label">Suba una imagen: </label>
+                <input asp-for="File" class="form-control" />
+                <span asp-validation-for="File" class="text-danger"></span>       
+
+               
+                <input type="hidden" asp-for="UserId" value="@User.Id" />
+
+            </div>
+
+            <button type="submit" class="btn btn-outline-dark text-black fw-bold mb-3">Crear Post</button>
+       </form>
+    </div>
+
+    <div class="row mb-3 text-light">
+       @{    
+           
+            var userPublications = ((List<PublicationsViewModel>)ViewBag.Publications).Where(p => p.UserId == User.Id).OrderByDescending(a => a.Date).ToList();
+
+                if(userPublications.Any()){
+     
+         @foreach (PublicationsViewModel item in userPublications) 
+              {
+                if (item.Photo != null)
+                {
+                    <div class="col-8 offset-2 mb-3">
+
+                        <div class="card-header text-light">
+                            <div class="user-avatar">
+                            <img src="@User.Photo" class="rounded-circle img-avatar" /> 
+                            </div>
+                            <strong>@User.UserName</strong>
+                            @item.Date
+
+                            <div class="btn-group">
+
+                                <a class="btn btn-primary btn-edit" asp-controller="Home" asp-action="Edit" asp-route-id="@item.Id" asp-route-userid="@item.UserId">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <form method="post" asp-controller ="Publications" asp-action="DeletePost" asp-route-id="@item.Id">                              
+                                    <button class="btn btn-danger">
+                                         <i class="fa-solid fa-eraser"></i>
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+
+                        <div class="card shadow-sm text-dark">
+
+                            <img src="@item.Photo" class="img-product-size bd-placeholder-img card-img-top " />
+
+                            <div class="card-body text-dark">
+                                  @item.Content 
+                            </div>
+
+                                <div class="row mb-3">
+                                    <h4 class="text-dark">Comentarios:</h4>
+                                </div>
+                                <div class="row mb-3">
+                                    @foreach (var comment in item.Comments)
+                                    {
+                                        <div class="col-12 mb-3">
+                                            <div class="comment">
+                                                <div class="user-avatar">
+                                                    <img src="@comment.PhotoUrl" class="rounded-circle img-avatar" />
+                                                </div>
+                                                <div class="comment-content">
+                                                    <strong> @comment.UserName</strong>
+                                                    <p>@comment.Content</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="input-group">
+                                            <div class="input-group-append">
+                                                <form method="post" asp-controller="Comments" asp-action="Create" asp-route-userid="@User.Id" asp-route-publicationsid="@item.Id">
+                                                    <input asp-for="@item.Comment" name="content" type="text" class="form-control mb-3" placeholder="Escriba su comentario" />
+                                                <button type="submit" class="btn btn-primary btn-edit" >
+                                                    <i class="fa-solid fa-arrow-right"></i>
+                                                </button>
+                                              </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-8 offset-2  mb-3">
+                        <div class="card-header">
+                            <div class="user-avatar">
+                                <img src="@User.Photo" class="rounded-circle img-avatar" /> 
+                            </div>
+                            <strong>@User.UserName</strong>
+                        @item.Date
+
+                    <div class="btn-group">
+
+                        <a class="btn btn-primary btn-edit" asp-controller="Home" asp-action="Edit" asp-route-id="@item.Id">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                            <form method="post" asp-controller="Publications" asp-action="DeletePost" asp-route-id="@item.Id">
+                                <button class="btn btn-danger">
+                                 <i class="fa-solid fa-eraser"></i>
+                                 </button>
+                              </form>
+
+                    </div>
+
+                </div>
+                <div class="card shadow-sm">
+                
+                    <div class="card-body text-dark">
+                    
+                               @item.Content        
+                               
+                    </div>
+                                <div class="row mb-3">
+                                    <h4 class="text-dark">Comentarios:</h4>
+                                </div>
+                                <div class="row mb-3 text-dark">
+                                    @foreach (var comment in item.Comments)
+                                    {
+                                        <div class="col-12 mb-3">
+                                            <div class="comment">
+                                                <div class="user-avatar">
+                                                    <img src="@comment.PhotoUrl" class="rounded-circle img-avatar" />
+                                                </div>
+                                                <div class="comment-content">
+                                                    <strong> @comment.UserName</strong>
+                                                    <p>@comment.Content</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="input-group">
+                                            <div class="input-group-append">
+                                                <form method="post" asp-controller="Comments" asp-action="Create" asp-route-userid="@User.Id" asp-route-publicationsid="@item.Id">
+                                                    <input asp-for="@item.Comment" name="content" type="text" class="form-control mb-3" placeholder="Escriba su comentario" />
+                                                    <button type="submit" class="btn btn-primary btn-edit">
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                </div>
+                        </div>
+                    }
+                }
+
+            }
+            else
+            {
+                <h2 class="text-center">No hay publicaciones</h2>
+            }
+        }
+    </div>
+
+</div>
+
+
+
+<script src="https://kit.fontawesome.com/47ea8ef61d.js" crossorigin="anonymous"></script>
+
+
+<style>
+
+    .card img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        overflow: hidden;
+        border-radius: 50%;
+        margin-right: 10px; 
+        float: left; 
+    }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+    .img-avatar {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .comment {
+        display: flex;
+        align-items: center;
+        background-color: #f5f5f5;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        overflow: hidden;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .comment-content {
+        flex: 1;
+    }
+
+        .comment-content p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+
+</style>

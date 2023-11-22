@@ -1,0 +1,262 @@
+﻿@using RedSocial.Core.Application.ViewModels.Comments
+@using RedSocial.Core.Application.ViewModels.Friends;
+@using RedSocial.Core.Application.ViewModels.Publications
+@using RedSocial.Core.Application.ViewModels.Users
+@model SaveFriendsViewModel
+@using Microsoft.AspNetCore.Http
+@using RedSocial.Core.Application.Dtos.Account
+@using RedSocial.Core.Application.Helpers;
+@using RedSocial.Core.Application.ViewModels.Users
+@inject IHttpContextAccessor httpContextAccessor
+@{
+    var User = httpContextAccessor.HttpContext.Session.Get<AuthenticationResponse>("user");
+  
+}
+<div class="container-fluid">
+    <div class="row">
+    <div class="col-md-4">       
+        <div class="card">
+            <div class="card-header bg-dark text-light">
+                Lista de Amigos
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Username</th>
+                            <th scope="col">Nombre</th>
+                           <th scope="col">Apellido</th>
+                            <th scope="col">Eliminar Amigo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (FriendsViewModel vm in ViewBag.Friends)
+                        {
+                            <tr>
+                                <td>@vm.UserName</td>
+                                <td>@vm.FriendName</td>
+                                <td>@vm.FriendLastName</td>
+                                <td>
+                                        <form asp-controller="Friends" asp-action="DeletePost" asp-route-id="@vm.Id">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fa-solid fa-eraser"></i>
+                                    </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+        <div class="col-md-8">
+    <div class="row mb-3 col-6 offset-3 text-dark bg-light">
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                @if (Model.HasError)
+                {
+                    <div class="alert bg-danger alert-dismissible fade show" role="alert">
+                        <p>@Model.Error</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+        <form method="post" asp-controller="Friends" asp-action="Create">
+
+            <div class="mb-3">
+                <label class="form-label">Escriba el Usuario de Amigo</label>
+                <span class="text-danger" asp-validation-for="FriendId"> </span>
+                <input asp-for="FriendId" type="text" class="form-control mb-3" />
+                
+                <input type="hidden" asp-for="UserId" value="@User.Id" />
+
+            </div>
+
+            <button type="submit" class="btn btn-outline-dark text-black fw-bold mb-3">Agregar Amigo</button>
+        </form>
+                
+    </div>
+
+    <div class="row mb-3 text-light">
+        
+          @foreach(FriendsViewModel friends in ViewBag.Friends){
+                        
+                        @foreach(PublicationsViewModel friednsPublications in friends.FriendPublications)
+                        {
+                            var userPublications = ((List<FriendsViewModel>)ViewBag.Friends).OrderByDescending(a => friednsPublications.Date).ToList();
+
+                            if (userPublications.Any())
+                            {
+
+                            if (friednsPublications.Photo != null)
+                            {
+                                <div class="col-8 offset-2 mb-3">
+
+                                    <div class="card-header text-light">
+                                        <div class="user-avatar">
+                                            <img src="@friends.FriendPhoto" class="rounded-circle img-avatar" />
+                                        </div>
+                                        <strong>@friends.UserName</strong>
+                                        @friednsPublications.Date
+
+                                      
+
+                                    </div>
+
+                                    <div class="card shadow-sm text-dark">
+
+                                        <img src="@friednsPublications.Photo" class="img-product-size bd-placeholder-img card-img-top " />
+
+                                        <div class="card-body text-dark">
+                                            @friednsPublications.Content
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <h4 class="text-dark">Comentarios:</h4>
+                                        </div>
+                                        <div class="row mb-3">
+                                            @foreach (var comment in friednsPublications.Comments)
+                                            {
+                                                <div class="col-12 mb-3">
+                                                    <div class="comment">
+                                                        <div class="user-avatar">
+                                                            <img src="@comment.PhotoUrl" class="rounded-circle img-avatar" />
+                                                        </div>
+                                                        <div class="comment-content">
+                                                            <strong> @comment.UserName</strong>
+                                                            <p>@comment.Content</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <div class="input-group">
+                                                    <div class="input-group-append">
+                                                        <form method="post" asp-controller="Friends" asp-action="CreateComments" asp-route-userid="@User.Id" asp-route-publicationsid="@friednsPublications.Id">
+                                                            <input asp-for="@friednsPublications.Comment" name="content" type="text" class="form-control mb-3" placeholder="Escriba su comentario" />
+                                                            <button type="submit" class="btn btn-primary btn-edit">
+                                                                <i class="fa-solid fa-arrow-right"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-8 offset-2  mb-3">
+                                    <div class="card-header">
+                                        <div class="user-avatar">
+                                            <img src="@friends.FriendPhoto" class="rounded-circle img-avatar" />
+                                        </div>
+                                        <strong>@friends.UserName</strong>
+                                        @friednsPublications.Date
+
+                                     
+                                    </div>
+                                    <div class="card shadow-sm">
+
+                                        <div class="card-body text-dark">
+
+                                            @friednsPublications.Content
+
+                                        </div>
+                                        <div class="row mb-3">
+                                            <h4 class="text-dark">Comentarios:</h4>
+                                        </div>
+                                        <div class="row mb-3 text-dark">
+                                            @foreach (var comment in friednsPublications.Comments)
+                                            {
+                                                <div class="col-12 mb-3">
+                                                    <div class="comment">
+                                                        <div class="user-avatar">
+                                                            <img src="@comment.PhotoUrl" class="rounded-circle img-avatar" />
+                                                        </div>
+                                                        <div class="comment-content">
+                                                            <strong> @comment.UserName</strong>
+                                                            <p>@comment.Content</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <div class="input-group">
+                                                    <div class="input-group-append">
+                                                        <form method="post" asp-controller="Friends" asp-action="CreateComments" asp-route-userid="@User.Id" asp-route-publicationsid="@friednsPublications.Id">
+                                                            <input asp-for="@friednsPublications.Comment" name="content" type="text" class="form-control mb-3" placeholder="Escriba su comentario" />
+                                                            <button type="submit" class="btn btn-primary btn-edit">
+                                                                <i class="fa-solid fa-arrow-right"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            }
+                        }
+
+
+                        else
+                        {
+                            <h2 class="text-center">No hay publicaciones</h2>
+                        }
+                                
+                            }
+
+                        }
+                    
+                        
+
+      </div>
+     </div>
+  </div>
+</div>
+
+
+
+<script src="https://kit.fontawesome.com/47ea8ef61d.js" crossorigin="anonymous"></script>
+
+
+<style>
+
+    .card img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        overflow: hidden;
+        border-radius: 50%;
+        margin-right: 10px;
+        float: left;
+    }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+    .img-avatar {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+</style>
